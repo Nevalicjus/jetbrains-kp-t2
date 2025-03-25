@@ -3,20 +3,19 @@ import java.io.IOException
 import java.util.jar.JarFile
 
 object ClassGetter {
-    private val classLocationsForCurrentClasspath: MutableList<File>
-        get() {
-            val javaClassPath = System.getProperty("java.class.path") ?: return mutableListOf<File>()
-            return javaClassPath.split(File.pathSeparator.toRegex()).filter { it.isNotEmpty() }
-                .map { File(it) }.toMutableList()
-        }
-
     fun allKnownClasses(): MutableList<Class<*>> {
         val classFiles = mutableListOf<Class<*>>()
-        val classLocations = this.classLocationsForCurrentClasspath
+        val classLocations = this.classLocationsForCurrentClasspath()
         for (file in classLocations) {
             classFiles.addAll(this.classesFromPath(file))
         }
         return classFiles
+    }
+
+    private fun classLocationsForCurrentClasspath(): MutableList<File> {
+        val javaClassPath = System.getProperty("java.class.path") ?: return mutableListOf<File>()
+        return javaClassPath.split(File.pathSeparator.toRegex()).filter { it.isNotEmpty() }
+            .map { File(it) }.toMutableList()
     }
 
     private fun file2ClassName(fileName: String): String {
