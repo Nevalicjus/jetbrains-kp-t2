@@ -14,8 +14,8 @@ fun main(arguments: Array<String>)  {
 
     val classes = ClassGetter.allKnownClasses()
     val results = mutableListOf<String>()
-    for (fclass in classes) {
-        val res = regex.find(fclass.name)
+    for (fileClass in classes) {
+        val res = regex.find(fileClass.name)
         if (res == null) {
             // only matches
             continue
@@ -23,18 +23,18 @@ fun main(arguments: Array<String>)  {
             // kotlin.random.Random$Default
             // don't import inner definitions of classes
             continue
-        } else if (fclass.kotlin.visibility != KVisibility.PUBLIC) {
+        } else if (fileClass.kotlin.visibility != KVisibility.PUBLIC) {
             // kotlin.collections.builders.ListBuilder
             // not public == can't import (* I'm 99% sure)
             continue
             // during tries to compile with kotlinc-native for the cleanest "./solution <>",
             // I've removed dependency on kotlin.reflect.KVisibility through java's accessFlags
             // but this depends on jdk 20+, and allows kotlin.collections.builders.ListBuilder
-        } else if (java.lang.reflect.AccessFlag.PUBLIC !in fclass.accessFlags()) {
+        } else if (java.lang.reflect.AccessFlag.PUBLIC !in fileClass.accessFlags()) {
             // not public == cant import
             continue
         }
-        else if (fclass.name.endsWith("Kt")) {
+        else if (fileClass.name.endsWith("Kt")) {
             // kotlin.collections.builders.ListBuilderKt
             // ListBuilder gets removed as internal,
             // but the "for Java" - ListBuilderKt - name isn't removed and does not show up as internal
@@ -56,7 +56,7 @@ fun main(arguments: Array<String>)  {
     // not kotlin.coroutines.AbstractCoroutineContextElement
     // but we could add number of steps as heuristic,
     // or add some usage based statistics and let them influence our decision
-    results.sortBy() { it.length }
+    results.sortBy(selector = { it.length })
     val ans = results[0]
     println("Answer: $ans")
 }
