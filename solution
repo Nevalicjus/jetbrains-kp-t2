@@ -1,0 +1,2 @@
+#!/bin/bash
+kotlinc src -include-runtime -d out.jar && java -jar out.jar "$@" && rm out.jar
